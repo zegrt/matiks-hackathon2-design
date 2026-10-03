@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin flow · Dispatch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="app.css">
+<script>try { const t = localStorage.getItem('dispatch.theme'); if (t) document.documentElement.dataset.theme = t; else if (matchMedia('(prefers-color-scheme: light)').matches) document.documentElement.dataset.theme = 'light'; } catch {}</script>
+<style>
+  body { min-width:0; overflow:auto; }
+  .wrap { max-width:1240px; margin:0 auto; padding:34px 28px 64px; }
+  h1 { font:600 28px/1.1 'Archivo'; font-stretch:88%; letter-spacing:-.012em; }
+  .lead { color:var(--tx2); font-size:14px; margin-top:8px; max-width:760px; line-height:1.55; }
+  .lead a { color:var(--tx); }
+  h2 { font:600 17px 'Archivo'; margin:38px 0 6px; }
+  h2 + p { color:var(--tx3); font-size:13px; margin-bottom:14px; max-width:760px; }
+  .stages { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:26px; margin-top:26px; position:relative; }
+  .stage { position:relative; }
+  .stage:not(:last-child)::after { content:"→"; position:absolute; right:-20px; top:4px; color:var(--tx3); font-size:16px; }
+  .stage h3 { font:600 11px 'Archivo'; font-stretch:75%; letter-spacing:.14em; text-transform:uppercase; color:var(--tx3); padding-bottom:8px; border-bottom:1px solid var(--line2); }
+  .stage h3 b { color:var(--tx); font-weight:700; margin-right:6px; }
+  .node { padding:10px 12px; margin-top:8px; border:1px solid var(--line2); border-radius:4px; background:var(--raised); }
+  .node b { display:block; font-weight:600; font-size:13.5px; }
+  .node > span { display:block; font-size:12px; color:var(--tx3); margin-top:2px; line-height:1.4; }
+  .node.crit { border-color:var(--red-edge); box-shadow:inset 3px 0 0 var(--red); }
+  .node.auto { box-shadow:inset 3px 0 0 var(--green); }
+  .node.end { background:transparent; border-style:dashed; }
+  .node kbd { margin-left:6px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th { text-align:left; font:600 11px 'Archivo'; font-stretch:75%; letter-spacing:.12em; text-transform:uppercase; color:var(--tx3); padding:8px 10px; border-bottom:1px solid var(--line2); white-space:nowrap; }
+  td { padding:9px 10px; border-bottom:1px solid var(--line); color:var(--tx2); vertical-align:top; line-height:1.45; }
+  td:first-child { color:var(--tx); font-weight:600; white-space:nowrap; }
+  td.k { white-space:nowrap; }
+  td code { font:400 11.5px 'JetBrains Mono'; color:var(--tx2); }
+  .st { display:inline-block; font:500 11px 'JetBrains Mono'; padding:1px 6px; border:1px solid var(--line2); border-radius:2px; color:var(--tx2); white-space:nowrap; }
+  .st.r { color:var(--green); border-color:color-mix(in srgb, var(--green) 45%, transparent); }
+  .st.c { color:var(--tx); }
+  .open { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:28px; }
+  .q { padding:10px 0; border-bottom:1px solid var(--line); font-size:13px; color:var(--tx2); }
+  .q b { color:var(--tx); }
+</style>
+</head>
+<body><div class="wrap">
+  <h1>The admin flow, touchpoint by touchpoint</h1>
+  <p class="lead">What an admin does in the console from opening it to closing the last ticket, what each control does, what it writes to the <code class="mono">support</code> database, and where it leads. Every row works in the <a href="./">prototype</a>. Status names and action names are the schema’s. Nothing in this flow ever sends a message to a user.</p>
+
+  <div class="stages">
+    <div class="stage"><h3><b>1</b>Arrive</h3>
+      <div class="node"><b>Open the console</b><span>Theme follows the OS; the toggle remembers your choice.</span></div>
+      <div class="node"><b>Name prompt · first visit only</b><span>Sent as <code class="mono">X-Actor</code> on every action, so history says who did what.</span></div>
+      <div class="node"><b>Queue opens on the top ticket</b><span>Critical safety reports first, then by priority score, then oldest.</span></div>
+    </div>
+    <div class="stage"><h3><b>2</b>Pick a ticket</h3>
+      <div class="node"><b>Status tabs</b><span>To review · Replied · Closed. Counts are the big numbers.</span></div>
+      <div class="node"><b>Cohort + Filter</b><span>All / Paying / 100+ streak, then channel, category, mode, language.</span></div>
+      <div class="node"><b>Move</b><span>Click a row, or <kbd>J</kbd><kbd>K</kbd>. Jump anywhere with <kbd>⌘K</kbd>.</span></div>
+      <div class="node"><b>Agent footer</b><span>Tickets still being classified, and failed runs.</span></div>
+      <div class="node"><b>From Insights</b><span>Click a top issue or a channel to open those tickets.</span></div>
+    </div>
+    <div class="stage"><h3><b>3</b>Read the state</h3>
+      <div class="node crit"><b>Critical · safety</b><span>Hazard band, wait time. No draft by rule.</span></div>
+      <div class="node crit"><b>Escalate · payments, merch</b><span>Person only. The message, then reply or hand off.</span></div>
+      <div class="node"><b>Assist</b><span>Draft with values matched to evidence; confidence under 0.90 or not on the safe list.</span></div>
+      <div class="node auto"><b>Auto-ready</b><span>On the safe list at 0.90 or more. One key, or approve the batch.</span></div>
+      <div class="node"><b>Agent working / failed</b><span>Live steps, or the error and a retry note.</span></div>
+      <div class="node"><b>Rejected · handed off · replied · closed</b><span>What happened, by whom, and what’s still possible.</span></div>
+    </div>
+    <div class="stage"><h3><b>4</b>Decide, then next</h3>
+      <div class="node"><b>Approve <kbd>A</kbd> · Edit <kbd>E</kbd></b><span>→ <span class="st r">replied</span>, next ticket opens.</span></div>
+      <div class="node"><b>Hand off <kbd>X</kbd></b><span>→ stays <span class="st">triaged</span>, leaves your list.</span></div>
+      <div class="node"><b>Reject <kbd>R</kbd> · Note <kbd>N</kbd></b><span>→ status unchanged.</span></div>
+      <div class="node"><b>Close <kbd>C</kbd> · Reopen <kbd>O</kbd></b><span>→ <span class="st c">closed</span> / back to review.</span></div>
+      <div class="node end"><b>Undo <kbd>Z</kbd></b><span>For 6 seconds after any decision. Recorded as a reopen.</span></div>
+    </div>
+  </div>
+
+  <h2>Decisions</h2>
+  <p>Each decision writes exactly one row to <code class="mono">actions</code> with <code class="mono">dry_run = true</code>. The ticket timer stops on the first one, which is what time-to-first-action measures.</p>
+  <table>
+    <thead><tr><th>Control</th><th>Key</th><th>Available when</th><th>What happens</th><th>Writes</th><th>Status after</th><th>Leads to</th></tr></thead>
+    <tbody>
+      <tr><td>Approve</td><td class="k"><kbd>A</kbd></td><td>Assist or auto draft, not rejected</td><td>Records the draft as the reply</td><td><code>approve</code> + draft_id</td><td><span class="st r">replied</span></td><td>Next ticket · toast with Undo</td></tr>
+      <tr><td>Edit</td><td class="k"><kbd>E</kbd></td><td>Any draft</td><td>Opens the editor. Live checks: numbers vs evidence, 5-sentence limit, promise words</td><td>—</td><td>—</td><td>Save &amp; approve <kbd>⌘↵</kbd> or Cancel <kbd>Esc</kbd></td></tr>
+      <tr><td>Save &amp; approve</td><td class="k"><kbd>⌘↵</kbd></td><td>In the editor</td><td>Records your text as the reply</td><td><code>edit</code> + body</td><td><span class="st r">replied</span></td><td>Next ticket</td></tr>
+      <tr><td>Write reply</td><td class="k"><kbd>E</kbd></td><td>Escalate, rejected, handed off, agent working or failed</td><td>Empty editor, same checks</td><td><code>edit</code> + body</td><td><span class="st r">replied</span></td><td>Next ticket</td></tr>
+      <tr><td>Reject</td><td class="k"><kbd>R</kbd></td><td>Assist or auto draft</td><td>Pick what was wrong, optional note</td><td><code>reject</code> + reason</td><td>unchanged</td><td>Same ticket shows “Draft rejected”; Write reply becomes primary</td></tr>
+      <tr><td>Escalate / Hand off</td><td class="k"><kbd>X</kbd></td><td>Any triaged ticket</td><td>Hands it to the team in <code>drafts.routing</code>, optional note</td><td><code>escalate</code> + note</td><td>unchanged (<span class="st">triaged</span>)</td><td>Moves to the collapsed “Handed off” group · next ticket</td></tr>
+      <tr><td>Approve all auto-ready</td><td class="k"><kbd>⇧A</kbd></td><td>Auto-ready group is not empty</td><td>Confirm dialog lists each draft and its confidence</td><td>N × <code>approve</code></td><td><span class="st r">replied</span></td><td>Back to the priority list</td></tr>
+      <tr><td>Close</td><td class="k"><kbd>C</kbd></td><td>Triaged or replied</td><td>Spam, duplicate, resolved elsewhere, no reply needed</td><td><code>close</code> + reason</td><td><span class="st c">closed</span></td><td>Next ticket</td></tr>
+      <tr><td>Add note</td><td class="k"><kbd>N</kbd></td><td>Any ticket</td><td>Internal only; shown above the message for the next person</td><td><code>note</code> + body</td><td>unchanged</td><td>Stays on the ticket</td></tr>
+      <tr><td>Reopen</td><td class="k"><kbd>O</kbd></td><td>Closed</td><td>Back into the queue</td><td><code>reopen</code></td><td><span class="st">triaged</span> (assumed)</td><td>To review, same ticket</td></tr>
+      <tr><td>Undo</td><td class="k"><kbd>Z</kbd></td><td>6 s after a decision</td><td>Restores the ticket</td><td><code>reopen</code></td><td>previous</td><td>The restored ticket</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Everything else on screen</h2>
+  <p>Controls that read or navigate. None of them write to the database except the name.</p>
+  <table>
+    <thead><tr><th>Touchpoint</th><th>Where</th><th>Key</th><th>What it does</th><th>Data</th></tr></thead>
+    <tbody>
+      <tr><td>Queue / Insights / Evals</td><td>Top bar</td><td class="k"><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd></td><td>Switch page</td><td>—</td></tr>
+      <tr><td>Jump</td><td>Top bar</td><td class="k"><kbd>⌘K</kbd></td><td>Find a ticket by id, username, email or message text; also page and theme commands</td><td>Searches unmasked values</td></tr>
+      <tr><td>Time to first action · cost per resolved</td><td>Top bar</td><td></td><td>The two scored numbers; click for Insights</td><td>Sample queries from the schema doc</td></tr>
+      <tr><td>Live dot</td><td>Top bar</td><td></td><td>Channels popover: last success, failures, last error per channel</td><td><code>channel_cursors</code></td></tr>
+      <tr><td>Mask PII</td><td>Top bar</td><td class="k"><kbd>M</kbd></td><td>Masks usernames, emails and phone numbers everywhere, including inside messages. On by default</td><td><code>reporter_*</code></td></tr>
+      <tr><td>Dry-run</td><td>Top bar</td><td></td><td>Always on; explains that nothing is ever sent</td><td><code>actions.dry_run</code></td></tr>
+      <tr><td>Theme</td><td>Top bar</td><td></td><td>Light / dark; remembered in this browser</td><td>local only</td></tr>
+      <tr><td>Your initials</td><td>Top bar</td><td></td><td>Change the name used on your actions</td><td><code>X-Actor</code></td></tr>
+      <tr><td>Status tabs</td><td>Queue</td><td></td><td>To review (<code>triaged</code>), Replied, Closed</td><td><code>tickets.status</code></td></tr>
+      <tr><td>Cohort</td><td>Queue</td><td></td><td>All / Paying / 100+ streak; empty states explain why a list is empty</td><td><code>cohort_paying</code>, <code>cohort_streak_days</code></td></tr>
+      <tr><td>Filter</td><td>Queue</td><td class="k"><kbd>F</kbd></td><td>Channel, category, mode, language; active filters become removable chips</td><td>indexed columns</td></tr>
+      <tr><td>Groups</td><td>Queue</td><td></td><td>Critical (pinned) · By priority · Auto-ready · Handed off (collapsed)</td><td><code>priority_score</code>, <code>mode</code></td></tr>
+      <tr><td>Agent footer</td><td>Queue</td><td></td><td>Tickets with the agent: running steps and failed runs</td><td><code>agent_runs.status</code></td></tr>
+      <tr><td>Open in ClickUp / Gmail</td><td>Ticket</td><td></td><td>Deep link to the source</td><td><code>external_url</code></td></tr>
+      <tr><td>Show full message</td><td>Ticket</td><td class="k"><kbd>Space</kbd></td><td>Expands a long email</td><td><code>body</code></td></tr>
+      <tr><td>Highlighted values</td><td>Draft</td><td></td><td>Hover links a value in the draft to its evidence row</td><td><code>drafts.evidence</code></td></tr>
+      <tr><td>Pipeline line</td><td>Right column</td><td class="k"><kbd>T</kbd></td><td>Trace drawer: each step’s model, time, tokens, cost, input and output, or the error</td><td><code>agent_runs.trace</code> + <code>token_log</code></td></tr>
+      <tr><td>Top issues · channels</td><td>Insights</td><td></td><td>Click to open those tickets in the queue</td><td><code>issue_type</code>, <code>channel</code></td></tr>
+      <tr><td>Failures only</td><td>Evals</td><td></td><td>Show only eval tickets the pipeline got wrong</td><td>eval results (storage open)</td></tr>
+      <tr><td>Shortcuts</td><td>Anywhere</td><td class="k"><kbd>?</kbd></td><td>The full key sheet</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Assumptions to confirm with the devs</h2>
+  <div class="open">
+    <div>
+      <div class="q"><b>Auto drafts need one click.</b> Only console actions move a ticket to replied, so auto-ready tickets wait in their own group with “Approve all”. If the API approves them itself, the group disappears.</div>
+      <div class="q"><b>Reopen goes to <code class="mono">triaged</code></b> when the ticket has a classification, otherwise <code class="mono">open</code>.</div>
+      <div class="q"><b>Safety tickets are pinned</b> above the score. The score has no severity component.</div>
+    </div>
+    <div>
+      <div class="q"><b>Rejecting doesn’t re-run the agent.</b> The ticket waits for a person.</div>
+      <div class="q"><b>Edited text isn’t re-checked by the guardrail.</b> The editor’s checks run in the browser.</div>
+      <div class="q"><b>Failed runs retry up to 3 times.</b> The prototype shows “attempt 2 of 3”.</div>
+    </div>
+  </div>
+</div></body>
+</html>
