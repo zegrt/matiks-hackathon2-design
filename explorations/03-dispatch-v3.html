@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dispatch v3</title>
+<style>
+  :root { color-scheme: dark; --text-secondary:#86868b; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:system-ui,-apple-system,sans-serif; background:#1d1d1f; color:#f5f5f7; padding:2rem; line-height:1.5; }
+  h2 { font-size:1.5rem; font-weight:600; margin-bottom:.5rem; }
+  h3 { font-size:1.1rem; font-weight:600; }
+  .subtitle { color:var(--text-secondary); margin-bottom:1.5rem; max-width:1240px; }
+  .cards { display:grid; gap:1rem; }
+  .card { background:#2d2d2f; border:1px solid #424245; border-radius:12px; overflow:hidden; }
+  .card-body { padding:1rem; }
+  .card-body p { color:var(--text-secondary); font-size:.85rem; }
+</style>
+</head>
+<body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  .cards.dirs { grid-template-columns: 1fr; max-width: 1240px; }
+  .cards.dirs .card:hover { transform: none; }
+  .cards.dirs .card-body { display: flex; gap: 18px; align-items: baseline; padding: 14px 18px; }
+  .cards.dirs .card-body h3 { white-space: nowrap; }
+
+  .dv { --bg:#0B0D0C; --panel:#0F1210; --raised:#151917; --line:#1E2420; --line2:#2B322D;
+        --tx:#E6EAE1; --tx2:#B0B7AC; --tx3:#828B80; --red:#FF6B5E; --amber:#F2B544; --green:#8FD16A;
+        height:640px; overflow:hidden; background:var(--bg); color:var(--tx); text-align:left;
+        font:13.5px/1.45 'Archivo', sans-serif; font-variant-numeric:tabular-nums; -webkit-font-smoothing:antialiased;
+        display:grid; grid-template-rows:52px minmax(0,1fr); }
+  .dv * { box-sizing:border-box; }
+  .dv p, .dv h4 { margin:0; }
+  .lab { font:600 11px 'Archivo'; font-stretch:75%; letter-spacing:.12em; text-transform:uppercase; color:var(--tx3); }
+  .mono { font-family:'JetBrains Mono', monospace; }
+
+  /* top bar: identity left, nav, system numbers right — all neutral */
+  .v-top { display:flex; align-items:center; gap:28px; padding:0 20px; border-bottom:1px solid var(--line); }
+  .v-brand { display:flex; align-items:center; gap:9px; font:800 12.5px 'Archivo'; font-stretch:75%; letter-spacing:.16em; text-transform:uppercase; }
+  .v-brand i { width:8px; height:8px; background:var(--tx); display:block; }
+  .v-nav { display:flex; align-self:stretch; }
+  .v-nav span { display:flex; align-items:center; gap:8px; padding:0 13px; color:var(--tx3); font-weight:500; border-bottom:2px solid transparent; margin-bottom:-1px; }
+  .v-nav span.on { color:var(--tx); border-bottom-color:var(--tx); }
+  .v-nav em { font:400 11px 'JetBrains Mono'; font-style:normal; color:var(--tx3); }
+  .v-stats { margin-left:auto; display:flex; align-items:center; gap:20px; }
+  .v-stat { display:flex; align-items:baseline; gap:7px; color:var(--tx3); font-size:12px; }
+  .v-stat b { font:500 21px/1 'Archivo'; font-stretch:66%; color:var(--tx); }
+  .v-sep { width:1px; height:22px; background:var(--line2); }
+  .v-dry { display:flex; align-items:center; gap:7px; font-size:11.5px; color:var(--tx2); border:1px solid var(--line2); padding:5px 10px; border-radius:2px; }
+  .v-dry i { width:6px; height:6px; border-radius:50%; background:var(--amber); display:block; }
+
+  .v-body { display:grid; grid-template-columns:304px minmax(0,1fr) 316px; min-height:0; }
+
+  /* queue: only tickets that need a human */
+  .v-q { border-right:1px solid var(--line); display:flex; flex-direction:column; min-height:0; }
+  .v-qhead { padding:16px 16px 12px; }
+  .v-qtitle { display:flex; align-items:baseline; justify-content:space-between; }
+  .v-qtitle h4 { font:600 14px 'Archivo'; }
+  .v-qtitle span { font:400 11px 'JetBrains Mono'; color:var(--tx3); }
+  .v-seg { display:flex; margin-top:11px; border:1px solid var(--line2); border-radius:3px; overflow:hidden; }
+  .v-seg span { flex:1; text-align:center; padding:5px 0; font-size:12px; color:var(--tx3); border-right:1px solid var(--line2); }
+  .v-seg span:last-child { border-right:0; }
+  .v-seg span.on { background:var(--raised); color:var(--tx); }
+  .v-row { position:relative; padding:11px 16px 12px 18px; border-top:1px solid var(--line); }
+  .v-row::before { content:""; position:absolute; left:0; top:0; bottom:0; width:2px; background:var(--bar, transparent); }
+  .v-row.esc { --bar:var(--red); }
+  .v-row.sel { background:var(--raised); --bar:var(--tx); }
+  .v-r1 { display:flex; justify-content:space-between; align-items:baseline; }
+  .v-name { font-weight:600; }
+  .v-age { font:400 11px 'JetBrains Mono'; color:var(--tx3); }
+  .v-issue { color:var(--tx2); margin-top:1px; }
+  .v-meta { display:flex; gap:10px; margin-top:4px; font-size:11.5px; color:var(--tx3); }
+  .v-meta .c { color:var(--tx2); }
+  .v-meta .e { color:var(--red); margin-left:auto; font-weight:600; }
+  .v-list { flex:1; min-height:0; overflow:hidden; -webkit-mask-image:linear-gradient(#000 calc(100% - 36px), transparent); mask-image:linear-gradient(#000 calc(100% - 36px), transparent); }
+  .v-auto { border-top:1px solid var(--line); padding:12px 16px; display:flex; justify-content:space-between; color:var(--tx3); font-size:12px; }
+  .v-auto b { color:var(--green); font-weight:500; }
+
+  /* centre: the conversation — the focal column */
+  .v-c { padding:22px 32px 20px; display:flex; flex-direction:column; min-height:0; overflow:hidden; }
+  .v-chead { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
+  .v-title { font:600 25px/1.12 'Archivo'; font-stretch:88%; letter-spacing:-.012em; }
+  .v-sub { color:var(--tx3); font-size:12.5px; margin-top:6px; }
+  .v-sub b { color:var(--tx2); font-weight:600; }
+  .v-sub .mono { font-size:11px; }
+  .v-right { text-align:right; }
+  .v-id { font-size:10.5px; color:var(--tx3); margin-top:7px; }
+  .v-mode { font:600 11px 'Archivo'; font-stretch:75%; letter-spacing:.12em; text-transform:uppercase; border:1px solid var(--line2); padding:5px 9px; white-space:nowrap; margin-top:3px; }
+  .v-in { margin:22px 0 18px; padding-left:14px; border-left:2px solid var(--line2); color:var(--tx2); font-size:14.5px; line-height:1.5; }
+  .v-in .lab { display:block; margin-bottom:5px; }
+  .v-draft { background:var(--raised); border:1px solid var(--line2); border-radius:4px; }
+  .v-dhead { display:flex; justify-content:space-between; align-items:baseline; padding:11px 18px; border-bottom:1px solid var(--line); }
+  .v-ok { font-size:12px; color:var(--green); }
+  .v-dtext { padding:16px 18px 18px; font-size:16px; line-height:1.62; }
+  .v-dtext .sig { display:block; color:var(--tx3); font-size:14px; margin-top:6px; }
+  .cite { display:inline-block; font:600 9.5px/14px 'JetBrains Mono'; min-width:15px; text-align:center; border:1px solid #4E574F; color:var(--tx2); border-radius:2px; margin-left:3px; vertical-align:2px; }
+  .cite.hot { background:var(--tx); color:var(--bg); border-color:var(--tx); }
+  .hl { background:rgba(230,234,225,.09); box-shadow:0 1px 0 var(--tx3); }
+  .v-act { display:flex; align-items:center; gap:8px; padding:12px 18px; border-top:1px solid var(--line); }
+  .btn { display:inline-flex; align-items:center; gap:10px; padding:8px 14px; font:600 13px 'Archivo'; border:1px solid var(--line2); border-radius:3px; color:var(--tx); }
+  .btn kbd { font:500 10.5px 'JetBrains Mono'; color:var(--tx3); border:1px solid var(--line2); border-radius:2px; padding:0 5px; }
+  .btn.pri { background:var(--tx); color:var(--bg); border-color:var(--tx); }
+  .btn.pri kbd { color:#4B524A; border-color:#B9BEB4; }
+  .btn.esc { color:var(--red); }
+  .v-next { margin-left:auto; font-size:11.5px; color:var(--tx3); text-align:right; line-height:1.35; }
+
+  /* right: why it is safe to send */
+  .v-f { border-left:1px solid var(--line); background:var(--panel); padding:22px; display:flex; flex-direction:column; gap:20px; min-height:0; overflow:hidden; }
+  .v-hero { display:flex; align-items:flex-end; gap:10px; margin-top:8px; }
+  .v-hero b { font:500 54px/.84 'Archivo'; font-stretch:62%; letter-spacing:-.02em; }
+  .v-hero span { color:var(--tx2); font-size:13px; line-height:1.25; padding-bottom:1px; }
+  .v-chips { display:flex; gap:6px; margin-top:12px; }
+  .chip { font-size:11.5px; padding:2px 8px; border:1px solid var(--line2); border-radius:2px; color:var(--tx2); }
+  .v-warn { margin-top:12px; padding:9px 11px; background:rgba(242,181,68,.07); border-left:2px solid var(--amber); font-size:12.5px; color:var(--tx2); line-height:1.4; }
+  .v-warn b { color:var(--amber); font-weight:600; }
+  .v-ev .lab { margin-bottom:6px; display:block; }
+  .v-ev .row { display:grid; grid-template-columns:26px minmax(0,1fr) auto; padding:8px 0; border-top:1px solid var(--line); align-items:baseline; }
+  .v-ev .row.hot { background:rgba(230,234,225,.05); margin:0 -10px; padding:8px 10px; }
+  .v-ev .row > .cite { justify-self:start; }
+  .v-ev .k { color:var(--tx2); }
+  .v-ev .src { grid-column:2 / 4; font:400 10.5px 'JetBrains Mono'; color:var(--tx3); margin-top:2px; }
+  .v-ev .val { font:500 16px/1 'Archivo'; font-stretch:70%; }
+  .v-ev .ver { font-size:11.5px; color:var(--green); }
+  .v-dec .line { display:flex; justify-content:space-between; align-items:baseline; margin-top:7px; }
+  .v-dec .line b { font-weight:600; }
+  .v-dec .line .n { font:500 18px/1 'Archivo'; font-stretch:70%; }
+  .v-conf { position:relative; height:5px; background:var(--line2); margin:10px 0 6px; }
+  .v-conf i { position:absolute; left:0; top:0; bottom:0; width:82%; background:var(--tx2); display:block; }
+  .v-conf u { position:absolute; left:90%; top:-4px; bottom:-4px; width:2px; background:var(--tx); display:block; }
+  .v-conflab { display:flex; justify-content:space-between; font-size:11px; color:var(--tx3); }
+  .v-why { font-size:12.5px; color:var(--tx2); margin-top:9px; line-height:1.4; }
+  .v-trace { margin-top:auto; display:flex; justify-content:space-between; padding-top:12px; border-top:1px solid var(--line); font-size:12px; color:var(--tx3); }
+  .v-trace b { color:var(--tx2); font-weight:500; }
+</style>
+
+<h2>Dispatch v3: one focal point, one meaning per color</h2>
+<p class="subtitle">Three columns that match the order of the work: pick a ticket → read and approve the draft → check why it's safe. The draft is the only raised panel and Approve is the only solid button, so that's where the eye lands. Color now marks state only: red = escalate, amber = data warning, green = verified or auto. Everything else is grayscale. Citation 1 is shown in its hover state, linked to its evidence row.</p>
+
+<div class="cards dirs">
+  <div class="card" data-choice="dispatch-v3">
+    <div class="dv">
+
+      <div class="v-top">
+        <div class="v-brand"><i></i>Dispatch</div>
+        <div class="v-nav"><span class="on">Queue <em>9</em></span><span>Dashboard</span></div>
+        <div class="v-stats">
+          <div class="v-stat"><b>42</b>open</div>
+          <div class="v-stat"><b>17</b>replied</div>
+          <div class="v-stat"><b>128</b>closed</div>
+          <div class="v-sep"></div>
+          <div class="v-stat"><b>3:48</b>median to resolve</div>
+          <div class="v-stat"><b>$0.0041</b>per resolved</div>
+          <div class="v-dry"><i></i>Dry-run · nothing is sent</div>
+        </div>
+      </div>
+
+      <div class="v-body">
+
+        <div class="v-q">
+          <div class="v-qhead">
+            <div class="v-qtitle"><h4>Needs you</h4><span>by priority</span></div>
+            <div class="v-seg"><span class="on">All</span><span>Paying</span><span>100+ streak</span></div>
+          </div>
+          <div class="v-list">
+          <div class="v-row sel">
+            <div class="v-r1"><span class="v-name">ankit.k07</span><span class="v-age">4m</span></div>
+            <div class="v-issue">Shield held but not used</div>
+            <div class="v-meta"><span class="c">Paying · 118d streak</span><span>ClickUp</span></div>
+          </div>
+          <div class="v-row esc">
+            <div class="v-r1"><span class="v-name">riya_m</span><span class="v-age">12m</span></div>
+            <div class="v-issue">Charged twice</div>
+            <div class="v-meta"><span class="c">Paying</span><span>Email</span><span class="e">Escalate</span></div>
+          </div>
+          <div class="v-row esc">
+            <div class="v-r1"><span class="v-name">kavya.p</span><span class="v-age">22m</span></div>
+            <div class="v-issue">Merch not shipped</div>
+            <div class="v-meta"><span class="c">140d streak</span><span>Discord</span><span class="e">Escalate</span></div>
+          </div>
+          <div class="v-row">
+            <div class="v-r1"><span class="v-name">sana_k</span><span class="v-age">31m</span></div>
+            <div class="v-issue">Score not saved after duel</div>
+            <div class="v-meta"><span>ClickUp</span></div>
+          </div>
+          <div class="v-row">
+            <div class="v-r1"><span class="v-name">rohit.v</span><span class="v-age">15m</span></div>
+            <div class="v-issue">Rating dropped unfairly</div>
+            <div class="v-meta"><span>ClickUp</span></div>
+          </div>
+          <div class="v-row">
+            <div class="v-r1"><span class="v-name">meera.s</span><span class="v-age">9m</span></div>
+            <div class="v-issue">OTP not received</div>
+            <div class="v-meta"><span>Email</span></div>
+          </div>
+          </div>
+          <div class="v-auto"><span>Auto-resolved today</span><span><b>31</b> ›</span></div>
+        </div>
+
+        <div class="v-c">
+          <div class="v-chead">
+            <div>
+              <h4 class="v-title">Shield held but not used</h4>
+              <div class="v-sub"><b>ankit.k07</b> · ClickUp · Hinglish · Android 3.12 · 4 min ago</div>
+            </div>
+            <div class="v-right"><div class="v-mode">Assist · needs approval</div><div class="v-id mono">CU-14YJHF8K2</div></div>
+          </div>
+
+          <div class="v-in">
+            <span class="lab">They wrote</span>
+            bhai mera shield laga hi nahi, kal khela tha phir bhi streak 0 ho gaya 😭 120 din ka tha
+          </div>
+
+          <div class="v-draft">
+            <div class="v-dhead"><span class="lab">Draft reply · Hinglish</span><span class="v-ok">3 of 3 claims backed</span></div>
+            <div class="v-dtext">
+              <span class="hl">Aapka streak hamare record mein 118 din ka tha</span><span class="cite hot">1</span>, aur aapke paas 1 shield tha jo apply nahi hua<span class="cite">2</span>. Humne yeh case engineering team ko bhej diya hai<span class="cite">3</span>. Abhi hum koi date promise nahi kar sakte.
+              <span class="sig">— Team Matiks</span>
+            </div>
+            <div class="v-act">
+              <span class="btn pri">Approve <kbd>A</kbd></span>
+              <span class="btn">Edit <kbd>E</kbd></span>
+              <span class="btn">Reject <kbd>R</kbd></span>
+              <span class="btn esc">Escalate <kbd>X</kbd></span>
+              <span class="v-next">Sends nothing · opens next</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="v-f">
+          <div>
+            <span class="lab">User</span>
+            <div class="v-hero"><b>118</b><span>day<br>streak</span></div>
+            <div class="v-chips"><span class="chip">Paying</span></div>
+            <div class="v-warn"><b>Says 120 days.</b> The draft uses 118 from the database.</div>
+          </div>
+
+          <div class="v-ev">
+            <span class="lab">Evidence</span>
+            <div class="row hot"><span class="cite hot" style="margin:0">1</span><span class="k">Streak days</span><span class="val">118</span><span class="src">prod_db · users.streak_days</span></div>
+            <div class="row"><span class="cite" style="margin:0">2</span><span class="k">Shields held / used</span><span class="val">1 / 0</span><span class="src">prod_db · users.shields</span></div>
+            <div class="row"><span class="cite" style="margin:0">3</span><span class="k">Escalate to engineering</span><span class="ver">verified</span><span class="src">streak-shield.md · step 3</span></div>
+          </div>
+
+          <div class="v-dec">
+            <span class="lab">Decision</span>
+            <div class="line"><b>Assist</b><span class="n">0.82</span></div>
+            <div class="v-conf"><i></i><u></u></div>
+            <div class="v-conflab"><span>confidence</span><span>auto needs 0.90</span></div>
+            <div class="v-why">This issue isn't on the auto-resolve list, so a person approves it.</div>
+          </div>
+
+          <div class="v-trace"><span>Pipeline · 6 steps · <b>3.8s</b></span><span><b>$0.0049</b> ›</span></div>
+        </div>
+
+      </div>
+    </div>
+    <div class="card-body"><h3>Dispatch v3</h3><p>Big numbers survive in two places: the system figures in the top bar, at a calm size, and one large number for the user (the 118-day streak), because that's what the reply depends on.</p></div>
+  </div>
+</div>
+
+</body>
+</html>

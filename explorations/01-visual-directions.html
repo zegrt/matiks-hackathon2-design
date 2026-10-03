@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Visual directions</title>
+<style>
+  :root { color-scheme: dark; --text-secondary:#86868b; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:system-ui,-apple-system,sans-serif; background:#1d1d1f; color:#f5f5f7; padding:2rem; line-height:1.5; }
+  h2 { font-size:1.5rem; font-weight:600; margin-bottom:.5rem; }
+  h3 { font-size:1.1rem; font-weight:600; }
+  .subtitle { color:var(--text-secondary); margin-bottom:1.5rem; max-width:1240px; }
+  .cards { display:grid; gap:1rem; }
+  .card { background:#2d2d2f; border:1px solid #424245; border-radius:12px; overflow:hidden; }
+  .card-body { padding:1rem; }
+  .card-body p { color:var(--text-secondary); font-size:.85rem; }
+</style>
+</head>
+<body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=JetBrains+Mono:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400;1,6..72,500&family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  .cards.dirs { grid-template-columns: 1fr; gap: 32px; max-width: 1240px; }
+  .cards.dirs .card:hover { transform: none; }
+  .cards.dirs .card-body { display: flex; gap: 18px; align-items: baseline; padding: 14px 18px; }
+  .cards.dirs .card-body h3 { white-space: nowrap; }
+  .shot { height: 520px; overflow: hidden; font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; text-align: left; }
+  .shot * { box-sizing: border-box; }
+  .shot button { all: unset; cursor: default; }
+
+  /* ───────────── A · DISPATCH ───────────── */
+  .dA { --bg:#0A0C0B; --s1:#0F1210; --s2:#161A17; --line:#222824; --tx:#DCE1D6; --dim:#7D867C; --faint:#4A524B;
+        --auto:#A6E35A; --assist:#FFB547; --esc:#FF5A4E;
+        background:var(--bg); color:var(--tx); font:12px/1.4 'JetBrains Mono', monospace;
+        display:grid; grid-template-rows:40px minmax(0,1fr); }
+  .dA .cond { font-family:'Archivo'; font-stretch:72%; letter-spacing:.11em; text-transform:uppercase; }
+  .a-top { display:flex; align-items:center; justify-content:space-between; padding:0 16px; border-bottom:1px solid var(--line); }
+  .a-brand { display:flex; align-items:center; gap:9px; font-weight:800; font-size:12.5px; }
+  .a-led { width:8px; height:8px; background:var(--auto); }
+  .a-counts { display:flex; gap:24px; color:var(--dim); font-size:11px; }
+  .a-counts b { color:var(--tx); font:500 12px 'JetBrains Mono'; letter-spacing:0; margin-right:7px; }
+  .a-right { display:flex; align-items:center; gap:14px; }
+  .a-dry { color:var(--assist); border:1px solid #6b4f22; padding:3px 9px; font-size:10.5px;
+           background:repeating-linear-gradient(-45deg, transparent 0 5px, rgba(255,181,71,.09) 5px 10px); }
+  .a-clock { color:var(--dim); font-size:11px; }
+  .a-body { display:grid; grid-template-columns:minmax(0,37fr) minmax(0,63fr); min-height:0; }
+  .a-queue { border-right:1px solid var(--line); overflow:hidden; }
+  .a-qhead { display:flex; justify-content:space-between; padding:9px 14px; color:var(--dim); font-size:10.5px; border-bottom:1px solid var(--line); }
+  .a-strip { display:grid; grid-template-columns:30px minmax(0,1fr) auto; gap:0 10px; padding:10px 14px 10px 0;
+             border-bottom:1px solid var(--line); border-left:3px solid var(--m); }
+  .a-strip.sel { background:var(--s2); }
+  .a-rank { color:var(--faint); font-size:10.5px; text-align:right; padding-top:1px; }
+  .a-user { font-weight:500; }
+  .a-tag { font-size:9.5px; letter-spacing:.05em; padding:0 5px; margin-left:6px; border:1px solid; }
+  .a-tag.pay { color:#E7D27C; border-color:#4d4728; }
+  .a-tag.stk { color:#FF936A; border-color:#553226; }
+  .a-l2 { color:var(--dim); margin-top:3px; font-size:11px; }
+  .a-l3 { color:#A7AFA4; margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font:12.5px 'Archivo'; }
+  .a-side { display:flex; flex-direction:column; align-items:flex-end; gap:3px; font-size:10.5px; color:var(--dim); }
+  .a-mode { color:var(--m); font-size:10px; letter-spacing:.08em; }
+  .a-detail { display:grid; grid-template-rows:auto minmax(0,1fr) auto; min-height:0; }
+  .a-dhead { display:flex; justify-content:space-between; align-items:center; padding:10px 18px; border-bottom:1px solid var(--line); }
+  .a-id { font-weight:700; letter-spacing:.03em; }
+  .a-sub { color:var(--dim); margin-left:12px; font-size:11px; }
+  .a-metrics { display:flex; gap:18px; color:var(--dim); font-size:10.5px; }
+  .a-metrics b { color:var(--tx); font-weight:500; margin-left:6px; font-size:12px; }
+  .a-grid { display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); min-height:0; }
+  .a-sec { padding:14px 18px; overflow:hidden; }
+  .a-ev { border-left:1px solid var(--line); background:var(--s1); }
+  .a-label { color:var(--dim); font-size:10.5px; margin:0 0 9px; display:flex; align-items:center; gap:8px; }
+  .a-label::after { content:""; flex:1; height:1px; background:var(--line); }
+  .a-msg { font:14px/1.5 'Archivo'; color:#C4CABF; margin:0 0 18px; padding-left:11px; border-left:2px solid var(--faint); }
+  .a-draft { font:14.5px/1.62 'Archivo'; margin:0; }
+  .a-draft u { text-decoration:none; border-bottom:1px dashed var(--assist); }
+  .a-cite { display:inline-block; font:700 9px/13px 'JetBrains Mono'; color:var(--bg); background:var(--assist); min-width:13px; text-align:center; margin-left:3px; vertical-align:2px; }
+  .a-sign { display:block; color:var(--dim); font-size:12.5px; margin-top:4px; }
+  .a-evrow { display:grid; grid-template-columns:20px minmax(0,1fr) auto; align-items:baseline; padding:7px 0; border-bottom:1px dashed var(--line); }
+  .a-evrow > span:nth-child(2) { color:#B7BEB3; font-size:11px; }
+  .a-evrow > .a-cite { justify-self:start; }
+  .a-evrow b { font-weight:500; }
+  .a-evrow b.ok { color:var(--auto); font-size:10px; letter-spacing:.08em; }
+  .a-warn { color:var(--assist); font-size:10.5px; padding:5px 0 3px 20px; }
+  .a-trace { display:flex; height:7px; gap:2px; margin-top:2px; }
+  .a-trace i { display:block; background:#38413a; }
+  .a-trace i.hot { background:var(--assist); }
+  .a-trlab { display:flex; gap:2px; color:var(--faint); font-size:9.5px; margin-top:6px; }
+  .a-trlab span { white-space:nowrap; overflow:visible; }
+  .a-actions { display:flex; align-items:center; gap:8px; padding:10px 18px; border-top:1px solid var(--line); background:var(--s1); }
+  .a-key { font:700 11px 'Archivo'; font-stretch:78%; letter-spacing:.11em; color:var(--tx) !important; border:1px solid #39413a !important;
+           padding:6px 12px 6px 6px !important; display:inline-flex !important; align-items:center; gap:8px; }
+  .a-key kbd { font:500 10px 'JetBrains Mono'; border:1px solid #4a534b; border-bottom-width:2px; padding:0 5px; color:var(--dim); letter-spacing:0; }
+  .a-key.pri { background:var(--auto) !important; color:#0A0C0B !important; border-color:var(--auto) !important; }
+  .a-key.pri kbd { border-color:rgba(0,0,0,.3); color:#0A0C0B; }
+  .a-hint { margin-left:auto; color:var(--faint); font-size:10.5px; }
+
+  /* ───────────── B · PROOF ───────────── */
+  .dB { --paper:#F1F1EC; --white:#FBFBF8; --ink:#121212; --mute:#6A6A64; --rule:#D5D5CD; --blue:#2A35F0; --red:#D3261C;
+        background:var(--paper); color:var(--ink); font:14px/1.45 'Schibsted Grotesk', sans-serif;
+        display:grid; grid-template-rows:auto minmax(0,1fr); }
+  .b-mast { display:flex; align-items:flex-end; justify-content:space-between; padding:14px 26px 10px; border-bottom:2px solid var(--ink); }
+  .b-title { font-weight:800; font-size:21px; letter-spacing:-.025em; line-height:1; }
+  .b-title span { font-weight:400; color:var(--mute); }
+  .b-line { font-size:12.5px; color:var(--mute); display:flex; gap:18px; align-items:baseline; }
+  .b-line b { color:var(--ink); }
+  .b-dry { color:var(--red); font-weight:700; letter-spacing:.06em; font-size:10.5px; text-transform:uppercase; }
+  .b-body { display:grid; grid-template-columns:minmax(0,33fr) minmax(0,67fr); min-height:0; }
+  .b-queue { border-right:1px solid var(--rule); overflow:hidden; }
+  .b-qhead { font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--mute); padding:12px 22px 8px; display:flex; justify-content:space-between; }
+  .b-item { display:grid; grid-template-columns:30px minmax(0,1fr); padding:11px 22px 12px 14px; border-top:1px solid var(--rule); }
+  .b-item.sel { background:var(--white); box-shadow:inset 3px 0 0 var(--ink); }
+  .b-n { font:400 21px/1 'Newsreader'; color:#9B9B94; }
+  .b-item.sel .b-n { color:var(--ink); }
+  .b-q { font:italic 400 15px/1.3 'Newsreader'; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .b-meta { font-size:11px; color:var(--mute); margin-top:5px; display:flex; gap:7px; flex-wrap:wrap; }
+  .b-meta b { color:var(--ink); font-weight:700; }
+  .b-mode { font-weight:700; letter-spacing:.05em; text-transform:uppercase; font-size:10px; }
+  .b-detail { display:grid; grid-template-columns:minmax(0,1fr) 236px; min-height:0; }
+  .b-doc { padding:20px 30px; overflow:hidden; display:flex; flex-direction:column; }
+  .b-kicker { font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--mute); margin-bottom:10px; }
+  .b-kicker b { color:var(--ink); }
+  .b-quote { font:400 21px/1.34 'Newsreader'; letter-spacing:-.005em; margin:0 0 18px; text-indent:-.42em; }
+  .b-draftlab { display:flex; justify-content:space-between; border-top:1px solid var(--ink); padding-top:9px; margin-bottom:8px;
+                font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--mute); }
+  .b-draftlab b { color:var(--ink); }
+  .b-draft { font-size:15px; line-height:1.66; margin:0; }
+  .b-draft sup { color:var(--blue); font-weight:800; font-size:10px; margin-left:1px; }
+  .b-draft .chk { background:linear-gradient(transparent 62%, rgba(42,53,240,.13) 62%); }
+  .b-actions { display:flex; gap:22px; margin-top:auto; font-size:13px; font-weight:700; align-items:center; padding-top:14px; }
+  .b-ap { background:var(--ink); color:var(--paper); padding:8px 15px; }
+  .b-link { text-decoration:underline; text-underline-offset:4px; text-decoration-thickness:1px; }
+  .b-actions kbd { font:400 10px 'IBM Plex Mono'; color:var(--mute); margin-left:6px; }
+  .b-ap kbd { color:#A9A9A2; }
+  .b-margin { border-left:1px solid var(--rule); padding:20px 18px; font-size:12px; overflow:hidden; display:flex; flex-direction:column; }
+  .b-mhead { font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--mute); margin-bottom:12px; }
+  .b-fn { display:grid; grid-template-columns:16px minmax(0,1fr); margin-bottom:13px; line-height:1.4; }
+  .b-fn > span:first-child { color:var(--blue); font-weight:800; font-size:11px; }
+  .b-src { font:10.5px 'IBM Plex Mono'; color:var(--mute); display:block; margin-top:2px; }
+  .b-note { color:var(--red); font:italic 13.5px/1.3 'Newsreader'; margin:-5px 0 13px 16px; }
+  .b-stats { margin-top:auto; border-top:1px solid var(--ink); padding-top:10px; display:grid; grid-template-columns:1fr 1fr; gap:12px 10px; }
+  .b-stats div { font-size:10px; color:var(--mute); text-transform:uppercase; letter-spacing:.07em; }
+  .b-stats b { display:block; font-size:19px; color:var(--ink); letter-spacing:-.02em; text-transform:none; font-weight:700; line-height:1.1; }
+
+  /* ───────────── C · NUMERAL ───────────── */
+  .dC { --w:#FFFFFF; --k:#0B0B0B; --g:#85857F; --l:#E4E4DF; --lime:#D6F53E; --org:#FF5A1F;
+        background:var(--w); color:var(--k); font:14px/1.4 'Bricolage Grotesque', sans-serif;
+        display:grid; grid-template-rows:auto minmax(0,1fr); }
+  .dC .mono { font-family:'IBM Plex Mono', monospace; }
+  .c-top { display:grid; grid-template-columns:190px repeat(5, minmax(0,1fr)); border-bottom:2px solid var(--k); }
+  .c-top > div { padding:10px 14px 9px; border-right:1px solid var(--l); }
+  .c-top > div:last-child { border-right:0; }
+  .c-logo { font-weight:800; font-size:16px; letter-spacing:-.03em; display:flex; flex-direction:column; justify-content:space-between; }
+  .c-logo small { font:600 9.5px 'IBM Plex Mono'; color:var(--org); letter-spacing:.06em; }
+  .c-n { font-size:30px; font-weight:700; letter-spacing:-.045em; line-height:1; }
+  .c-n small { font-size:15px; letter-spacing:-.02em; }
+  .c-l { font:500 9.5px 'IBM Plex Mono'; text-transform:uppercase; letter-spacing:.08em; color:var(--g); margin-top:5px; }
+  .c-body { display:grid; grid-template-columns:minmax(0,41fr) minmax(0,59fr); min-height:0; }
+  .c-queue { border-right:2px solid var(--k); overflow:hidden; }
+  .c-t { width:100%; border-collapse:collapse; font:11px 'IBM Plex Mono'; }
+  .c-t th { font-weight:500; text-align:left; color:var(--g); text-transform:uppercase; letter-spacing:.08em; font-size:9.5px; padding:9px 10px; border-bottom:1px solid var(--k); }
+  .c-t td { padding:10px; border-bottom:1px solid var(--l); vertical-align:top; }
+  .c-t td:first-child, .c-t th:first-child { padding-left:14px; }
+  .c-t tr.sel td { background:var(--lime); border-bottom-color:var(--k); }
+  .c-u { font:700 13.5px 'Bricolage Grotesque'; letter-spacing:-.01em; }
+  .c-leaf { color:var(--g); display:block; margin-top:1px; }
+  .c-t tr.sel .c-leaf { color:#3d4a0c; }
+  .c-chip { display:inline-block; padding:1px 6px; font-size:9.5px; font-weight:600; letter-spacing:.06em; border:1px solid var(--k); }
+  .c-chip.auto { background:var(--k); color:var(--w); }
+  .c-chip.esc { background:var(--org); border-color:var(--org); color:var(--w); }
+  .c-co { font-weight:600; }
+  .c-detail { display:grid; grid-template-rows:auto minmax(0,1fr) auto; min-height:0; }
+  .c-hero { display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:20px; align-items:end; padding:14px 20px 13px; border-bottom:1px solid var(--k); }
+  .c-big { font-size:66px; font-weight:800; letter-spacing:-.06em; line-height:.8; }
+  .c-big { display:flex; align-items:flex-start; }
+  .c-big span { font:600 10px/1.25 'IBM Plex Mono'; letter-spacing:.08em; margin:4px 0 0 6px; }
+  .c-who b { font-weight:800; font-size:19px; letter-spacing:-.02em; display:block; line-height:1; }
+  .c-who div { font:10.5px 'IBM Plex Mono'; color:var(--g); margin-top:6px; }
+  .c-conf { text-align:right; }
+  .c-conf b { font-size:30px; font-weight:700; letter-spacing:-.04em; line-height:1; display:block; }
+  .c-meter { display:flex; gap:2px; justify-content:flex-end; margin-top:5px; }
+  .c-meter i { width:9px; height:5px; background:var(--k); display:block; }
+  .c-meter i.off { background:var(--l); }
+  .c-main { display:grid; grid-template-columns:minmax(0,1.35fr) minmax(0,1fr); min-height:0; }
+  .c-col { padding:13px 20px; overflow:hidden; }
+  .c-col + .c-col { border-left:1px solid var(--l); }
+  .c-lab { font:500 9.5px 'IBM Plex Mono'; text-transform:uppercase; letter-spacing:.1em; color:var(--g); margin-bottom:7px; display:flex; justify-content:space-between; }
+  .c-msg { font-size:15.5px; line-height:1.38; font-weight:500; margin:0 0 15px; }
+  .c-draft { font-size:14px; line-height:1.6; margin:0; }
+  .c-draft sup { display:inline-block; background:var(--k); color:var(--w); font:600 9px/13px 'IBM Plex Mono'; min-width:13px; text-align:center; margin-left:2px; vertical-align:2px; }
+  .c-ev { font:10.5px 'IBM Plex Mono'; }
+  .c-ev > div { display:grid; grid-template-columns:20px minmax(0,1fr) auto; padding:7px 0; border-bottom:1px solid var(--l); }
+  .c-ev sup { display:inline-block; background:var(--k); color:var(--w); font:600 9px/13px 'IBM Plex Mono'; width:13px; text-align:center; }
+  .c-ev b { font-weight:600; }
+  .c-flag { color:var(--org); font:600 10px 'IBM Plex Mono'; padding:5px 0 0 20px; }
+  .c-actions { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; border-top:2px solid var(--k); }
+  .c-actions > div { padding:12px 16px; font-weight:700; font-size:13.5px; letter-spacing:-.01em; border-right:1px solid var(--l); display:flex; justify-content:space-between; align-items:center; }
+  .c-actions > div:last-child { border-right:0; }
+  .c-actions .ap { background:var(--k); color:var(--lime); }
+  .c-actions kbd { font:500 10px 'IBM Plex Mono'; opacity:.55; }
+</style>
+
+<h2>Which direction has the right character?</h2>
+<p class="subtitle">Same content in all three: the queue plus the open ticket, a Hinglish streak-shield case for a paying user with a 118-day streak. Judge the feel, not the exact details. Click one to select it, then tell me in the terminal what you'd keep or change.</p>
+
+<div class="cards dirs">
+
+  <!-- ═════════ A · DISPATCH ═════════ -->
+  <div class="card" data-choice="dispatch">
+    <div class="shot dA">
+      <div class="a-top cond">
+        <div class="a-brand"><span class="a-led"></span>Matiks / Dispatch</div>
+        <div class="a-counts"><span><b>42</b>Open</span><span><b>17</b>Replied</span><span><b>128</b>Closed</span></div>
+        <div class="a-right"><span class="a-dry">Dry-run · nothing is sent</span><span class="a-clock">14:52:07 IST</span></div>
+      </div>
+      <div class="a-body">
+        <div class="a-queue">
+          <div class="a-qhead cond"><span>Queue · by priority</span><span>Cohort: all ▾</span></div>
+          <div class="a-strip sel" style="--m:var(--assist)">
+            <div class="a-rank">01</div>
+            <div><div><span class="a-user">ankit.k07</span><span class="a-tag pay">PAYING</span><span class="a-tag stk">118D</span></div>
+              <div class="a-l2">streak.shield_not_applied</div>
+              <div class="a-l3">bhai mera shield laga hi nahi, streak 0 ho gaya</div></div>
+            <div class="a-side"><span>CU · 4m</span><span class="a-mode">ASSIST</span></div>
+          </div>
+          <div class="a-strip" style="--m:var(--esc)">
+            <div class="a-rank">02</div>
+            <div><div><span class="a-user">riya_m</span><span class="a-tag pay">PAYING</span></div>
+              <div class="a-l2">payment.double_charge</div>
+              <div class="a-l3">Charged twice for Pro this month, please refund one</div></div>
+            <div class="a-side"><span>EM · 12m</span><span class="a-mode">ESCALATE</span></div>
+          </div>
+          <div class="a-strip" style="--m:var(--esc)">
+            <div class="a-rank">03</div>
+            <div><div><span class="a-user">kavya.p</span><span class="a-tag stk">140D</span></div>
+              <div class="a-l2">merch.not_shipped</div>
+              <div class="a-l3">won the hoodie in sept duel league, still nothing</div></div>
+            <div class="a-side"><span>DC · 22m</span><span class="a-mode">ESCALATE</span></div>
+          </div>
+          <div class="a-strip" style="--m:var(--auto)">
+            <div class="a-rank">04</div>
+            <div><div><span class="a-user">dev.sharma</span></div>
+              <div class="a-l2">subscription.what_is_included</div>
+              <div class="a-l3">What exactly do I get with Pro?</div></div>
+            <div class="a-side"><span>CU · 7m</span><span class="a-mode">AUTO .96</span></div>
+          </div>
+          <div class="a-strip" style="--m:var(--auto)">
+            <div class="a-rank">05</div>
+            <div><div><span class="a-user">arjun22</span></div>
+              <div class="a-l2">suggestion.ui</div>
+              <div class="a-l3">dark mode for the duel screen pls</div></div>
+            <div class="a-side"><span>CU · 1h</span><span class="a-mode">AUTO .98</span></div>
+          </div>
+        </div>
+        <div class="a-detail">
+          <div class="a-dhead">
+            <div><span class="a-id">CU-14YJHF8K2</span><span class="a-sub">ClickUp · Hinglish · Android 3.12</span></div>
+            <div class="a-metrics"><span>CONF<b>0.82</b></span><span>COST<b>$0.0049</b></span><span>WAIT<b>4m 12s</b></span></div>
+          </div>
+          <div class="a-grid">
+            <div class="a-sec">
+              <div class="a-label cond">Inbound</div>
+              <p class="a-msg">bhai mera shield laga hi nahi, kal khela tha phir bhi streak 0 ho gaya 😭 120 din ka tha</p>
+              <div class="a-label cond">Draft · Hinglish · needs approval</div>
+              <p class="a-draft">Aapka streak hamare record mein <u>118 din</u> ka tha<span class="a-cite">1</span>, aur aapke paas 1 shield tha jo apply nahi hua<span class="a-cite">2</span>. Humne yeh case engineering team ko bhej diya hai<span class="a-cite">3</span>. Abhi hum koi date promise nahi kar sakte.<span class="a-sign">— Team Matiks</span></p>
+            </div>
+            <div class="a-sec a-ev">
+              <div class="a-label cond">Evidence · 3 / 3 backed</div>
+              <div class="a-evrow"><span class="a-cite" style="margin:0">1</span><span>prod_db · streak_days</span><b>118</b></div>
+              <div class="a-warn">▲ user wrote 120 · draft uses DB value</div>
+              <div class="a-evrow"><span class="a-cite" style="margin:0">2</span><span>prod_db · shields held / used</span><b>1 / 0</b></div>
+              <div class="a-evrow"><span class="a-cite" style="margin:0">3</span><span>streak-shield.md › step 3</span><b class="ok">VERIFIED</b></div>
+              <div class="a-label cond" style="margin-top:16px">Pipeline · 3.8s</div>
+              <div class="a-trace"><i style="flex:.4"></i><i style="flex:.9"></i><i style="flex:.1"></i><i class="hot" style="flex:2.1"></i><i style="flex:.3"></i></div>
+              <div class="a-trlab"><span style="flex:.4">cls</span><span style="flex:.9">enrich</span><span style="flex:.1"></span><span style="flex:2.1;color:var(--assist)">draft · sonnet 2.1s</span><span style="flex:.3">grd</span></div>
+            </div>
+          </div>
+          <div class="a-actions">
+            <span class="a-key pri"><kbd>A</kbd>Approve</span><span class="a-key"><kbd>E</kbd>Edit</span><span class="a-key"><kbd>R</kbd>Reject</span><span class="a-key"><kbd>X</kbd>Escalate</span>
+            <span class="a-hint">J / K  next · prev</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body"><h3>A · Dispatch</h3><p>A control room. Near-black background, monospaced data and condensed uppercase labels. Tickets are strips with a colored left edge for the mode (lime auto, amber assist, red escalate). Signal colors carry the meaning, and every action has a key. Calm, precise, built for hours of use.</p></div>
+  </div>
+
+  <!-- ═════════ B · PROOF ═════════ -->
+  <div class="card" data-choice="proof">
+    <div class="shot dB">
+      <div class="b-mast">
+        <div class="b-title">Matiks Support <span>— the desk</span></div>
+        <div class="b-line"><span><b>42</b> open</span><span><b>17</b> replied</span><span><b>128</b> closed</span><span class="b-dry">Dry-run</span></div>
+      </div>
+      <div class="b-body">
+        <div class="b-queue">
+          <div class="b-qhead"><span>Next up</span><span>All cohorts</span></div>
+          <div class="b-item sel"><div class="b-n">1</div><div>
+            <div class="b-q">bhai mera shield laga hi nahi, streak 0 ho gaya</div>
+            <div class="b-meta"><b>ankit.k07</b><span>paying · 118-day streak</span><span>4m</span><span class="b-mode" style="color:#B26A00">assist</span></div></div></div>
+          <div class="b-item"><div class="b-n">2</div><div>
+            <div class="b-q">Charged twice for Pro this month, please refund one</div>
+            <div class="b-meta"><b>riya_m</b><span>paying</span><span>12m</span><span class="b-mode" style="color:var(--red)">escalate</span></div></div></div>
+          <div class="b-item"><div class="b-n">3</div><div>
+            <div class="b-q">won the hoodie in sept duel league, still nothing</div>
+            <div class="b-meta"><b>kavya.p</b><span>140-day streak</span><span>22m</span><span class="b-mode" style="color:var(--red)">escalate</span></div></div></div>
+          <div class="b-item"><div class="b-n">4</div><div>
+            <div class="b-q">What exactly do I get with Pro?</div>
+            <div class="b-meta"><b>dev.sharma</b><span>7m</span><span class="b-mode" style="color:#1D7A46">auto · .96</span></div></div></div>
+        </div>
+        <div class="b-detail">
+          <div class="b-doc">
+            <div class="b-kicker"><b>ankit.k07</b> wrote on ClickUp, in Hinglish · 4 min ago</div>
+            <p class="b-quote">“bhai mera shield laga hi nahi, kal khela tha phir bhi streak 0 ho gaya 😭 120 din ka tha”</p>
+            <div class="b-draftlab"><span><b>Draft reply</b> · Hinglish</span><span>Every claim cited</span></div>
+            <p class="b-draft"><span class="chk">Aapka streak hamare record mein 118 din ka tha</span><sup>1</sup>, <span class="chk">aur aapke paas 1 shield tha jo apply nahi hua</span><sup>2</sup>. <span class="chk">Humne yeh case engineering team ko bhej diya hai</span><sup>3</sup>. Abhi hum koi date promise nahi kar sakte. — Team Matiks</p>
+            <div class="b-actions"><span class="b-ap">Approve<kbd>⏎</kbd></span><span class="b-link">Edit<kbd>E</kbd></span><span class="b-link">Reject<kbd>R</kbd></span><span class="b-link">Escalate<kbd>X</kbd></span></div>
+          </div>
+          <div class="b-margin">
+            <div class="b-mhead">Sources</div>
+            <div class="b-fn"><span>1</span><span>Streak was 118 days<span class="b-src">prod_db · streak_days</span></span></div>
+            <div class="b-note">user said 120, we used 118</div>
+            <div class="b-fn"><span>2</span><span>1 shield held, 0 used<span class="b-src">prod_db · shields</span></span></div>
+            <div class="b-fn"><span>3</span><span>Escalate to engineering<span class="b-src">streak-shield.md · verified</span></span></div>
+            <div class="b-stats"><div>Confidence<b>0.82</b></div><div>Cost<b>$0.0049</b></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body"><h3>B · Proof</h3><p>An editor's desk. Light newsprint-gray paper with black ink and one ultramarine accent for citations. The customer's own words appear in a serif, as a quote. The draft reads like copy being checked: each claim is highlighted and footnoted, with its source in the margin. The character is "every claim has a source."</p></div>
+  </div>
+
+  <!-- ═════════ C · NUMERAL ═════════ -->
+  <div class="card" data-choice="numeral">
+    <div class="shot dC">
+      <div class="c-top">
+        <div class="c-logo">matiks support<small>● DRY-RUN</small></div>
+        <div><div class="c-n">42</div><div class="c-l">Open</div></div>
+        <div><div class="c-n">17</div><div class="c-l">Replied</div></div>
+        <div><div class="c-n">128</div><div class="c-l">Closed</div></div>
+        <div><div class="c-n">38<small>s</small></div><div class="c-l">Median wait</div></div>
+        <div><div class="c-n"><small>$</small>.004</div><div class="c-l">Per ticket</div></div>
+      </div>
+      <div class="c-body">
+        <div class="c-queue">
+          <table class="c-t">
+            <thead><tr><th>#</th><th>User / issue</th><th>Cohort</th><th>Age</th><th>Mode</th></tr></thead>
+            <tbody>
+              <tr class="sel"><td>01</td><td><span class="c-u">ankit.k07</span><span class="c-leaf">streak.shield_not_applied</span></td><td class="c-co">PAY · 118d</td><td>4m</td><td><span class="c-chip">ASSIST</span></td></tr>
+              <tr><td>02</td><td><span class="c-u">riya_m</span><span class="c-leaf">payment.double_charge</span></td><td class="c-co">PAY</td><td>12m</td><td><span class="c-chip esc">ESC</span></td></tr>
+              <tr><td>03</td><td><span class="c-u">kavya.p</span><span class="c-leaf">merch.not_shipped</span></td><td class="c-co">140d</td><td>22m</td><td><span class="c-chip esc">ESC</span></td></tr>
+              <tr><td>04</td><td><span class="c-u">dev.sharma</span><span class="c-leaf">subscription.what_is_included</span></td><td class="c-co">—</td><td>7m</td><td><span class="c-chip auto">AUTO</span></td></tr>
+              <tr><td>05</td><td><span class="c-u">arjun22</span><span class="c-leaf">suggestion.ui</span></td><td class="c-co">—</td><td>1h</td><td><span class="c-chip auto">AUTO</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="c-detail">
+          <div class="c-hero">
+            <div class="c-big">118<span>DAY<br>STREAK</span></div>
+            <div class="c-who"><b>ankit.k07</b><div>PAYING · CLICKUP · HINGLISH · 4M AGO</div></div>
+            <div class="c-conf"><b>0.82</b><div class="c-meter"><i></i><i></i><i></i><i></i><i class="off"></i></div><div class="c-l" style="margin-top:4px">Confidence</div></div>
+          </div>
+          <div class="c-main">
+            <div class="c-col">
+              <div class="c-lab"><span>They wrote</span></div>
+              <p class="c-msg">bhai mera shield laga hi nahi, kal khela tha phir bhi streak 0 ho gaya 😭 120 din ka tha</p>
+              <div class="c-lab"><span>Draft · Hinglish</span><span>$0.0049</span></div>
+              <p class="c-draft">Aapka streak hamare record mein 118 din ka tha<sup>1</sup>, aur aapke paas 1 shield tha jo apply nahi hua<sup>2</sup>. Humne yeh case engineering team ko bhej diya hai<sup>3</sup>. Abhi hum koi date promise nahi kar sakte. — Team Matiks</p>
+            </div>
+            <div class="c-col">
+              <div class="c-lab"><span>Evidence</span><span>3 / 3</span></div>
+              <div class="c-ev">
+                <div><sup>1</sup><span>streak_days</span><b>118</b></div>
+                <div class="c-flag" style="display:block;border:0">≠ user claim 120</div>
+                <div><sup>2</sup><span>shields held / used</span><b>1 / 0</b></div>
+                <div><sup>3</sup><span>streak-shield.md</span><b>VERIFIED</b></div>
+              </div>
+            </div>
+          </div>
+          <div class="c-actions">
+            <div class="ap">Approve <kbd>A</kbd></div><div>Edit <kbd>E</kbd></div><div>Reject <kbd>R</kbd></div><div>Escalate <kbd>X</kbd></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body"><h3>C · Numeral</h3><p>A Swiss-style scoreboard. A strict grid on white with heavy black rules, numbers set as large display type, and a chartreuse highlight for the selected ticket. The user's streak count is the hero, which fits Matiks as a numbers game. Loud and confident, the most "Matiks" of the three.</p></div>
+  </div>
+
+</div>
+
+</body>
+</html>

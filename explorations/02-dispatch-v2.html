@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dispatch v2</title>
+<style>
+  :root { color-scheme: dark; --text-secondary:#86868b; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:system-ui,-apple-system,sans-serif; background:#1d1d1f; color:#f5f5f7; padding:2rem; line-height:1.5; }
+  h2 { font-size:1.5rem; font-weight:600; margin-bottom:.5rem; }
+  h3 { font-size:1.1rem; font-weight:600; }
+  .subtitle { color:var(--text-secondary); margin-bottom:1.5rem; max-width:1240px; }
+  .cards { display:grid; gap:1rem; }
+  .card { background:#2d2d2f; border:1px solid #424245; border-radius:12px; overflow:hidden; }
+  .card-body { padding:1rem; }
+  .card-body p { color:var(--text-secondary); font-size:.85rem; }
+</style>
+</head>
+<body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=JetBrains+Mono:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400;1,6..72,500&family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  .cards.dirs { grid-template-columns: 1fr; gap: 32px; max-width: 1240px; }
+  .cards.dirs .card:hover { transform: none; }
+  .cards.dirs .card-body { display: flex; gap: 18px; align-items: baseline; padding: 14px 18px; }
+  .cards.dirs .card-body h3 { white-space: nowrap; }
+  .shot { height: 520px; overflow: hidden; font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; text-align: left; }
+  .shot * { box-sizing: border-box; }
+  .shot button { all: unset; cursor: default; }
+
+  /* ───────────── A · DISPATCH ───────────── */
+  .dA { --bg:#0A0C0B; --s1:#0F1210; --s2:#161A17; --line:#222824; --tx:#DCE1D6; --dim:#7D867C; --faint:#4A524B;
+        --auto:#A6E35A; --assist:#FFB547; --esc:#FF5A4E;
+        background:var(--bg); color:var(--tx); font:12px/1.4 'JetBrains Mono', monospace;
+        display:grid; grid-template-rows:40px minmax(0,1fr); }
+  .dA .cond { font-family:'Archivo'; font-stretch:72%; letter-spacing:.11em; text-transform:uppercase; }
+  .a-top { display:flex; align-items:center; justify-content:space-between; padding:0 16px; border-bottom:1px solid var(--line); }
+  .a-brand { display:flex; align-items:center; gap:9px; font-weight:800; font-size:12.5px; }
+  .a-led { width:8px; height:8px; background:var(--auto); }
+  .a-counts { display:flex; gap:24px; color:var(--dim); font-size:11px; }
+  .a-counts b { color:var(--tx); font:500 12px 'JetBrains Mono'; letter-spacing:0; margin-right:7px; }
+  .a-right { display:flex; align-items:center; gap:14px; }
+  .a-dry { color:var(--assist); border:1px solid #6b4f22; padding:3px 9px; font-size:10.5px;
+           background:repeating-linear-gradient(-45deg, transparent 0 5px, rgba(255,181,71,.09) 5px 10px); }
+  .a-clock { color:var(--dim); font-size:11px; }
+  .a-body { display:grid; grid-template-columns:minmax(0,37fr) minmax(0,63fr); min-height:0; }
+  .a-queue { border-right:1px solid var(--line); overflow:hidden; }
+  .a-qhead { display:flex; justify-content:space-between; padding:9px 14px; color:var(--dim); font-size:10.5px; border-bottom:1px solid var(--line); }
+  .a-strip { display:grid; grid-template-columns:30px minmax(0,1fr) auto; gap:0 10px; padding:10px 14px 10px 0;
+             border-bottom:1px solid var(--line); border-left:3px solid var(--m); }
+  .a-strip.sel { background:var(--s2); }
+  .a-rank { color:var(--faint); font-size:10.5px; text-align:right; padding-top:1px; }
+  .a-user { font-weight:500; }
+  .a-tag { font-size:9.5px; letter-spacing:.05em; padding:0 5px; margin-left:6px; border:1px solid; }
+  .a-tag.pay { color:#E7D27C; border-color:#4d4728; }
+  .a-tag.stk { color:#FF936A; border-color:#553226; }
+  .a-l2 { color:var(--dim); margin-top:3px; font-size:11px; }
+  .a-l3 { color:#A7AFA4; margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font:12.5px 'Archivo'; }
+  .a-side { display:flex; flex-direction:column; align-items:flex-end; gap:3px; font-size:10.5px; color:var(--dim); }
+  .a-mode { color:var(--m); font-size:10px; letter-spacing:.08em; }
+  .a-detail { display:grid; grid-template-rows:auto auto minmax(0,1fr) auto; min-height:0; }
+  .a-dhead { display:flex; justify-content:space-between; align-items:center; padding:10px 18px; border-bottom:1px solid var(--line); }
+  .a-id { font-weight:700; letter-spacing:.03em; }
+  .a-sub { color:var(--dim); margin-left:12px; font-size:11px; }
+  .a-metrics { display:flex; gap:18px; color:var(--dim); font-size:10.5px; }
+  .a-metrics b { color:var(--tx); font-weight:500; margin-left:6px; font-size:12px; }
+  .a-grid { display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); min-height:0; }
+  .a-sec { padding:14px 18px; overflow:hidden; }
+  .a-ev { border-left:1px solid var(--line); background:var(--s1); }
+  .a-label { color:var(--dim); font-size:10.5px; margin:0 0 9px; display:flex; align-items:center; gap:8px; }
+  .a-label::after { content:""; flex:1; height:1px; background:var(--line); }
+  .a-msg { font:14px/1.5 'Archivo'; color:#C4CABF; margin:0 0 18px; padding-left:11px; border-left:2px solid var(--faint); }
+  .a-draft { font:14.5px/1.62 'Archivo'; margin:0; }
+  .a-draft u { text-decoration:none; border-bottom:1px dashed var(--assist); }
+  .a-cite { display:inline-block; font:700 9px/13px 'JetBrains Mono'; color:var(--bg); background:var(--assist); min-width:13px; text-align:center; margin-left:3px; vertical-align:2px; }
+  .a-sign { display:block; color:var(--dim); font-size:12.5px; margin-top:4px; }
+  .a-evrow { display:grid; grid-template-columns:20px minmax(0,1fr) auto; align-items:baseline; padding:7px 0; border-bottom:1px dashed var(--line); }
+  .a-evrow > span:nth-child(2) { color:#B7BEB3; font-size:11px; }
+  .a-evrow > .a-cite { justify-self:start; }
+  .a-evrow b { font-weight:500; }
+  .a-evrow b.ok { color:var(--auto); font-size:10px; letter-spacing:.08em; }
+  .a-warn { color:var(--assist); font-size:10.5px; padding:5px 0 3px 20px; }
+  .a-trace { display:flex; height:7px; gap:2px; margin-top:2px; }
+  .a-trace i { display:block; background:#38413a; }
+  .a-trace i.hot { background:var(--assist); }
+  .a-trlab { display:flex; gap:2px; color:var(--faint); font-size:9.5px; margin-top:6px; }
+  .a-trlab span { white-space:nowrap; overflow:visible; }
+  .a-actions { display:flex; align-items:center; gap:8px; padding:10px 18px; border-top:1px solid var(--line); background:var(--s1); }
+  .a-key { font:700 11px 'Archivo'; font-stretch:78%; letter-spacing:.11em; color:var(--tx) !important; border:1px solid #39413a !important;
+           padding:6px 12px 6px 6px !important; display:inline-flex !important; align-items:center; gap:8px; }
+  .a-key kbd { font:500 10px 'JetBrains Mono'; border:1px solid #4a534b; border-bottom-width:2px; padding:0 5px; color:var(--dim); letter-spacing:0; }
+  .a-key.pri { background:var(--auto) !important; color:#0A0C0B !important; border-color:var(--auto) !important; }
+  .a-key.pri kbd { border-color:rgba(0,0,0,.3); color:#0A0C0B; }
+  .a-hint { margin-left:auto; color:var(--faint); font-size:10.5px; }
+
+  
+  /* ── v2: readouts borrowed from Numeral, kept instrument-like ── */
+  .dA { grid-template-rows:66px minmax(0,1fr); height:580px; }
+  .rd-row { display:flex; align-items:stretch; height:100%; }
+  .rd { display:flex; flex-direction:column; justify-content:center; padding:0 20px; border-left:1px solid var(--line); }
+  .rd b { font:500 30px/1 'Archivo'; font-stretch:66%; letter-spacing:-.01em; color:var(--tx); }
+  .rd b small { font:400 11px 'JetBrains Mono'; color:var(--dim); margin-left:4px; letter-spacing:0; text-transform:none; }
+  .rd b .cur { font-size:18px; color:var(--dim); margin-right:1px; vertical-align:3px; }
+  .rd span { font:600 9.5px 'Archivo'; font-stretch:72%; letter-spacing:.14em; text-transform:uppercase; color:var(--dim); margin-top:5px; }
+  .rd.kpi b { color:var(--auto); }
+  .rd-gap { width:14px; }
+  .a-top { padding:0 0 0 16px; }
+  .a-right { padding:0 16px; border-left:1px solid var(--line); height:100%; }
+  .t-read { display:grid; grid-template-columns:1.25fr 1fr 1.15fr 1fr 1fr; border-bottom:1px solid var(--line); }
+  .t-read > div { padding:10px 18px 9px; border-right:1px solid var(--line); }
+  .t-read > div:last-child { border-right:0; }
+  .t-read .l { font:600 9.5px 'Archivo'; font-stretch:72%; letter-spacing:.14em; text-transform:uppercase; color:var(--dim); }
+  .t-read .v { font:500 24px/1.05 'Archivo'; font-stretch:66%; margin-top:4px; display:flex; align-items:baseline; gap:6px; }
+  .t-read .v small { font:400 10.5px 'JetBrains Mono'; color:var(--dim); }
+  .t-read .v .warn { color:var(--assist); white-space:nowrap; }
+  .t-read .pay { color:#E7D27C; }
+  .meter { display:inline-flex; gap:2px; margin-left:4px; }
+  .meter i { width:7px; height:9px; background:var(--assist); display:block; }
+  .meter i.off { background:#2c332e; }
+</style>
+<h2>Dispatch, with bigger numbers from Numeral</h2>
+<p class="subtitle">Big numbers are kept to two places, sized as instrument readouts rather than a scoreboard. Costs are in ₹ (converted from the API's USD at about 88; the rate is a placeholder). The top-bar figures are illustrative until the devs answer the metric questions.</p>
+<div class="cards dirs">
+<!-- ═════════ A · DISPATCH ═════════ -->
+  <div class="card" data-choice="dispatch-v2">
+    <div class="shot dA">
+      <div class="a-top cond">
+        <div class="a-brand"><span class="a-led"></span>Matiks / Dispatch</div>
+        <div class="rd-row">
+          <div class="rd"><b>42</b><span>Open</span></div>
+          <div class="rd"><b>17</b><span>Replied</span></div>
+          <div class="rd"><b>128</b><span>Closed</span></div>
+          <div class="rd-gap"></div>
+          <div class="rd kpi"><b>3:48<small>min</small></b><span>Median time to resolve</span></div>
+          <div class="rd kpi"><b><span class="cur">₹</span>0.36</b><span>Cost / resolved ticket</span></div>
+          <div class="a-right"><span class="a-dry">Dry-run · nothing is sent</span><span class="a-clock">14:52:07 IST</span></div>
+        </div>
+      </div>
+      <div class="a-body">
+        <div class="a-queue">
+          <div class="a-qhead cond"><span>Queue · by priority</span><span>Cohort: all ▾</span></div>
+          <div class="a-strip sel" style="--m:var(--assist)">
+            <div class="a-rank">01</div>
+            <div><div><span class="a-user">ankit.k07</span><span class="a-tag pay">PAYING</span><span class="a-tag stk">118D</span></div>
+              <div class="a-l2">streak.shield_not_applied</div>
+              <div class="a-l3">bhai mera shield laga hi nahi, streak 0 ho gaya</div></div>
+            <div class="a-side"><span>CU · 4m</span><span class="a-mode">ASSIST</span></div>
+          </div>
+          <div class="a-strip" style="--m:var(--esc)">
+            <div class="a-rank">02</div>
+            <div><div><span class="a-user">riya_m</span><span class="a-tag pay">PAYING</span></div>
+              <div class="a-l2">payment.double_charge</div>
+              <div class="a-l3">Charged twice for Pro this month, please refund one</div></div>
+            <div class="a-side"><span>EM · 12m</span><span class="a-mode">ESCALATE</span></div>
+          </div>
+          <div class="a-strip" style="--m:var(--esc)">
+            <div class="a-rank">03</div>
+            <div><div><span class="a-user">kavya.p</span><span class="a-tag stk">140D</span></div>
+              <div class="a-l2">merch.not_shipped</div>
+              <div class="a-l3">won the hoodie in sept duel league, still nothing</div></div>
+            <div class="a-side"><span>DC · 22m</span><span class="a-mode">ESCALATE</span></div>
+          </div>
+          <div class="a-strip" style="--m:var(--auto)">
+            <div class="a-rank">04</div>
+            <div><div><span class="a-user">dev.sharma</span></div>
+              <div class="a-l2">subscription.what_is_included</div>
+              <div class="a-l3">What exactly do I get with Pro?</div></div>
+            <div class="a-side"><span>CU · 7m</span><span class="a-mode">AUTO .96</span></div>
+          </div>
+          <div class="a-strip" style="--m:var(--auto)">
+            <div class="a-rank">05</div>
+            <div><div><span class="a-user">arjun22</span></div>
+              <div class="a-l2">suggestion.ui</div>
+              <div class="a-l3">dark mode for the duel screen pls</div></div>
+            <div class="a-side"><span>CU · 1h</span><span class="a-mode">AUTO .98</span></div>
+          </div>
+        </div>
+        <div class="a-detail">
+          <div class="a-dhead">
+            <div><span class="a-id">CU-14YJHF8K2</span><span class="a-sub">ankit.k07 · ClickUp · Hinglish · Android 3.12</span></div>
+            <div class="a-metrics"><span>J / K  next · prev</span></div>
+          </div>
+          <div class="t-read">
+            <div><div class="l">Streak</div><div class="v">118<small>days</small><small class="warn">≠ 120 claimed</small></div></div>
+            <div><div class="l">Cohort</div><div class="v pay">Paying</div></div>
+            <div><div class="l">Confidence</div><div class="v">0.82<span class="meter"><i></i><i></i><i></i><i></i><i class="off"></i></span></div></div>
+            <div><div class="l">Cost so far</div><div class="v">₹0.43</div></div>
+            <div><div class="l">Waiting</div><div class="v">4:12<small>min</small></div></div>
+          </div>
+          <div class="a-grid">
+            <div class="a-sec">
+              <div class="a-label cond">Inbound</div>
+              <p class="a-msg">bhai mera shield laga hi nahi, kal khela tha phir bhi streak 0 ho gaya 😭 120 din ka tha</p>
+              <div class="a-label cond">Draft · Hinglish · needs approval</div>
+              <p class="a-draft">Aapka streak hamare record mein <u>118 din</u> ka tha<span class="a-cite">1</span>, aur aapke paas 1 shield tha jo apply nahi hua<span class="a-cite">2</span>. Humne yeh case engineering team ko bhej diya hai<span class="a-cite">3</span>. Abhi hum koi date promise nahi kar sakte.<span class="a-sign">— Team Matiks</span></p>
+            </div>
+            <div class="a-sec a-ev">
+              <div class="a-label cond">Evidence · 3 / 3 backed</div>
+              <div class="a-evrow"><span class="a-cite" style="margin:0">1</span><span>prod_db · streak_days</span><b>118</b></div>
+              <div class="a-warn">▲ user wrote 120 · draft uses DB value</div>
+              <div class="a-evrow"><span class="a-cite" style="margin:0">2</span><span>prod_db · shields held / used</span><b>1 / 0</b></div>
+              <div class="a-evrow"><span class="a-cite" style="margin:0">3</span><span>streak-shield.md › step 3</span><b class="ok">VERIFIED</b></div>
+              <div class="a-label cond" style="margin-top:16px">Pipeline · 3.8s</div>
+              <div class="a-trace"><i style="flex:.4"></i><i style="flex:.9"></i><i style="flex:.1"></i><i class="hot" style="flex:2.1"></i><i style="flex:.3"></i></div>
+              <div class="a-trlab"><span style="flex:.4">cls</span><span style="flex:.9">enrich</span><span style="flex:.1"></span><span style="flex:2.1;color:var(--assist)">draft · sonnet 2.1s</span><span style="flex:.3">grd</span></div>
+            </div>
+          </div>
+          <div class="a-actions">
+            <span class="a-key pri"><kbd>A</kbd>Approve</span><span class="a-key"><kbd>E</kbd>Edit</span><span class="a-key"><kbd>R</kbd>Reject</span><span class="a-key"><kbd>X</kbd>Escalate</span>
+            <span class="a-hint">Approve only marks state · nothing leaves this console</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body"><h3>Dispatch v2</h3><p>Two levels of big numbers. The top bar shows the system-wide figures the judges score (time to resolve, cost per resolved ticket). The ticket header shows the figures the reviewer needs for this one ticket (streak, cohort, confidence, cost, wait). Both use condensed instrument-style numerals, not scoreboard type, so it stays a tool, not a game. Costs are in ₹.</p></div>
+  </div>
+
+  
+</div>
+
+</body>
+</html>
